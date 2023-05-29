@@ -37,8 +37,8 @@ GameState gameState = GameState::PLAYING;
 // 局数
 int N_Round = 1;
 int N_Draw = 0;
-int N_Player1 = 0;
-int N_Player2 = 0;
+int N_Player_X = 0;
+int N_Player_O = 0;
 
 // 光标位置
 int cursorRow = 0;
@@ -57,7 +57,7 @@ void initBoard() {
 void drawBoard() {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleCursorPosition(hConsole, { 0, 7 });
-	cout << "     ACC   " << "R:" << N_Round << "  P_X:" << N_Player1 << "  P_O:" << N_Player2 << "  D:" << N_Draw << endl;
+	cout << "     ACC   " << "R:" << N_Round << "  P_X:" << N_Player_X << "  P_O:" << N_Player_O << "  D:" << N_Draw << endl;
 	cout << endl;
 	cout << setw(15) << left << " ";
 	for (int i = 0; i < BOARD_SIZE; i++) {
@@ -303,6 +303,7 @@ void handleInput() {
 }
 
 int main() {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	// 标题
 	cout <<   "     ======================================== "<< endl;
 	cout <<   "     |           TicTacToc  v0.0.2          |" << endl;
@@ -313,7 +314,6 @@ int main() {
 	cout << endl;
 
 	// 底部栏
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleCursorPosition(hConsole, { 0, 16 });
 	cout << "     +_____________________________________+" << endl;
 	cout << "     | Player_X: W A S D SPACE             |" << endl;
@@ -337,24 +337,38 @@ int main() {
 		if (gameState == GameState::PLAYER_X_WIN) {
 			SetConsoleCursorPosition(hConsole, { 0, 22 });
 			SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
-				cout << "            \\\\\\ Player X wins! ///" << endl;
-				SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+			cout << "            \\\\\\";
+			SetConsoleTextAttribute(hConsole, FOREGROUND_RED);
+			cout << " Player X wins! "; 
+			SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
+			cout << "///" << endl;
+			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+			N_Player_X++;
 			drawBoard();
 		} else if (gameState == GameState::PLAYER_O_WIN) {
 			SetConsoleCursorPosition(hConsole, { 0, 22 });
 			SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
-				cout << "            \\\\\\ Player O wins! ///" << endl;
+			cout << "            \\\\\\";
+			SetConsoleTextAttribute(hConsole, FOREGROUND_BLUE);
+			cout << " Player O wins! "; 
+			SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
+			cout << "///" << endl;
 			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+			N_Player_O++;
 			drawBoard();
 		} else {
 			SetConsoleCursorPosition(hConsole, { 0, 22 });
-			SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY | FOREGROUND_GREEN);
-			cout << "            \\\\\\      Draw!     ///   " << endl;
+			SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
+			cout << "            \\\\\\";
+			SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN);
+			cout << " Draw! ";
+			SetConsoleTextAttribute(hConsole, FOREGROUND_INTENSITY | FOREGROUND_RED | FOREGROUND_GREEN);
+			cout << "///" << endl;
 			SetConsoleTextAttribute(hConsole, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 			N_Draw++;
 			drawBoard();
 		}
-		N_Round = 1 + N_Player1 + N_Player2 + N_Draw;   // 更新总局数
+		N_Round = 1 + N_Player_X + N_Player_O + N_Draw;   // 更新总局数
 		SetConsoleCursorPosition(hConsole, { 0, 23 });
 		cout << "press 'q' to quit, 'r' to restart, 'c' to continue" << endl;
 		while (int key = _getch()) {
@@ -362,7 +376,7 @@ int main() {
 			else if (key == 'r') {
 				gameState = GameState::PLAYING;
 				N_Round = 1;
-				N_Player1 = N_Player2 = N_Draw = 0;
+				N_Player_X = N_Player_O = N_Draw = 0;
 				cursorRow = 0;
 				cursorCol = 0;
 				break;
